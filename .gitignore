@@ -11,6 +11,7 @@ configure
 configure.lineno
 Makefile
 Makefile.in
+stamp-h*
 xrectsel
 xrectsel-*.tar.gz
 *.o
