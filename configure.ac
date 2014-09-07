@@ -1,4 +1,4 @@
-AC_INIT([xrectsel], [0.3])
+AC_INIT([xrectsel], [0.3.1])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([foreign subdir-objects -Wall -Werror])
 AC_PROG_CC
