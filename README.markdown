@@ -11,6 +11,7 @@ are recognized and substituted. Look at the source to see what are supported.
 
 To build and install from source,
 
+    sudo apt-get install autoconf # needed for ./bootstrap
     ./bootstrap  # required if ./configure is not present
     ./configure --prefix /usr
     make
