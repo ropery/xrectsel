@@ -137,7 +137,7 @@ static int select_region(Display *dpy, Window root, Region *region)
   int start_x = 0, start_y = 0;
 
   Cursor cursor;
-  cursor = XCreateFontCursor(dpy, XC_crosshair);
+  cursor = XCreateFontCursor(dpy, XC_tcross);
 
   /* Grab pointer for these events */
   XGrabPointer(dpy, root, True, PointerMotionMask | ButtonPressMask | ButtonReleaseMask,
