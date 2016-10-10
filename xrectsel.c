@@ -131,7 +131,7 @@ static int select_region(Display *dpy, Window root, Region *region)
   GC sel_gc;
   XGCValues sel_gv;
 
-  int done = 0, btn_pressed = 0;
+  int status, done = 0, btn_pressed = 0;
   int x = 0, y = 0;
   unsigned int width = 0, height = 0;
   int start_x = 0, start_y = 0;
@@ -140,8 +140,14 @@ static int select_region(Display *dpy, Window root, Region *region)
   cursor = XCreateFontCursor(dpy, XC_tcross);
 
   /* Grab pointer for these events */
-  XGrabPointer(dpy, root, True, PointerMotionMask | ButtonPressMask | ButtonReleaseMask,
+  status = XGrabPointer(dpy, root, True,
+               PointerMotionMask | ButtonPressMask | ButtonReleaseMask,
                GrabModeAsync, GrabModeAsync, None, cursor, CurrentTime);
+
+  if (status != GrabSuccess) {
+      error("failed to grab pointer\n");
+      return EXIT_FAILURE;
+  }
 
   sel_gv.function = GXinvert;
   sel_gv.subwindow_mode = IncludeInferiors;
