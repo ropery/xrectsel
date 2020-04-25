@@ -41,7 +41,7 @@ struct Region {
 
 static void error(const char *errstr, ...);
 static int print_region_attr(const char *fmt, Region region);
-static int select_region(Display *dpy, Window root, Region *region);
+static int select_region(Display *dpy, Window root, Region *region, int xgrab);
 
 int main(int argc, const char *argv[])
 {
@@ -49,6 +49,8 @@ int main(int argc, const char *argv[])
   Window root;
   Region sr; /* selected region */
   const char *fmt; /* format string */
+  int xgrab=0; 
+  int opt=1;
 
   dpy = XOpenDisplay(NULL);
   if (!dpy) {
@@ -57,10 +59,16 @@ int main(int argc, const char *argv[])
 
   root = DefaultRootWindow(dpy);
 
-  fmt = argc > 1 ? argv[1] : "%wx%h+%x+%y\n";
+
+  if (argc > opt && !strcmp(argv[opt], "--xgrab")) {
+	  xgrab = 1;
+	  opt++;
+  }
+
+  fmt = argc > opt ? argv[opt] : "%wx%h+%x+%y\n";
 
   /* interactively select a rectangular region */
-  if (select_region(dpy, root, &sr) != EXIT_SUCCESS) {
+  if (select_region(dpy, root, &sr, xgrab) != EXIT_SUCCESS) {
     XCloseDisplay(dpy);
     die("failed to select a rectangular region\n");
   }
@@ -124,7 +132,7 @@ static int print_region_attr(const char *fmt, Region region)
   return 0;
 }
 
-static int select_region(Display *dpy, Window root, Region *region)
+static int select_region(Display *dpy, Window root, Region *region, int xgrab)
 {
   XEvent ev;
 
@@ -162,6 +170,9 @@ static int select_region(Display *dpy, Window root, Region *region)
         x = start_x = ev.xbutton.x_root;
         y = start_y = ev.xbutton.y_root;
         width = height = 0;
+		if (xgrab){
+			XGrabServer(dpy);
+		}
         break;
       case MotionNotify:
         /* Draw only if button is pressed */
@@ -204,6 +215,7 @@ static int select_region(Display *dpy, Window root, Region *region)
   XDrawRectangle(dpy, root, sel_gc, x, y, width, height);
   XFlush(dpy);
 
+  XUngrabServer(dpy);
   XUngrabPointer(dpy, CurrentTime);
   XFreeCursor(dpy, cursor);
   XFreeGC(dpy, sel_gc);
